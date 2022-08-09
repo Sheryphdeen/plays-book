@@ -1,0 +1,23 @@
+---
+- name: "check and update ssl certs"
+  hosts: all
+  become: true
+  tasks:
+    - name: check if nginx is installed
+      apt: 
+        name: 'nginx'
+        state: present
+
+    - name: check if certbot is installed
+      apt:
+        name: certbot
+        state: present
+
+    - name: cronjob to update certbot 
+      cron:
+        name: 'certbot'
+        minute: "0"
+        hour: "1"
+        day: "*"
+        user: "root"
+        job: "/usr/bin/certbot renew --quiet --post-hook 'sudo service nginx reload'"
